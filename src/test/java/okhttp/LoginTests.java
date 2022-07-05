@@ -3,6 +3,7 @@ package okhttp;
 import com.google.gson.Gson;
 import dto.Auth;
 import dto.AuthResponse;
+import dto.ErrorDto;
 import okhttp3.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -50,6 +51,10 @@ public class LoginTests {
 
         Assert.assertFalse(response.isSuccessful());
         Assert.assertEquals(response.code(),400);
+
+        ErrorDto errorDto = gson.fromJson(response.body().string(),ErrorDto.class);
+        Assert.assertEquals(errorDto.getMessage(),"Wrong email format! Example: name@mail.com");
+        System.out.println(errorDto.getDetails());
 
     }
 
