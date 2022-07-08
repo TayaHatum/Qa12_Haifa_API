@@ -10,6 +10,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.containsString;
+
 
 public class LoginTestsRA {
 
@@ -65,5 +67,19 @@ public class LoginTestsRA {
                 .extract().response().as(ErrorDto.class);
 
         Assert.assertEquals(errorDto.getMessage(),"Wrong email format! Example: name@mail.com");
+    }
+    @Test
+    public void loginWrongEmailAssertRA(){
+
+        given()
+                .body(Auth.builder().email("noagmail.com").password("Nnoa12345$").build())
+                .contentType(ContentType.JSON)
+                .when()
+                .post("login")
+                .then()
+                .assertThat().statusCode(400)
+                .assertThat().body("message",containsString("Wrong email format! Example: name@mail.com"))
+                .assertThat().body("details",containsString("uri=/api/login"));
+
     }
 }
