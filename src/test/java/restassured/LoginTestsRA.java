@@ -1,8 +1,11 @@
 package restassured;
 
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
 import dto.Auth;
 import dto.AuthResponse;
+import dto.ErrorDto;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -30,5 +33,37 @@ public class LoginTestsRA {
                 .extract().response().as(AuthResponse.class);
         System.out.println(authResponse.getToken());
 
+    }
+
+    @Test
+    public void loginSuccess2(){
+        Auth auth = Auth.builder().email("noa@gmail.com").password("Nnoa12345$").build();
+
+        AuthResponse authResponse =given()
+                .body(auth)
+                .contentType("application/json")
+                .when()
+                .post("login")
+                .then()
+                .assertThat().statusCode(200)
+                .extract().response().as(AuthResponse.class);
+        System.out.println(authResponse.getToken());
+
+    }
+
+    @Test
+    public void  loginWithWrongEmailFormat(){
+        Auth auth = Auth.builder().email("noagmail.com").password("Nnoa12345$").build();
+
+        ErrorDto errorDto =given()
+                .body(auth)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("login")
+                .then()
+                .assertThat().statusCode(400)
+                .extract().response().as(ErrorDto.class);
+
+        Assert.assertEquals(errorDto.getMessage(),"Wrong email format! Example: name@mail.com");
     }
 }
